@@ -60,6 +60,10 @@ app.use((error, req, res, next) => {
   });
 });
 
+app.use('/', (req, res) => {
+  res.send('Welcome to the API');
+});
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
