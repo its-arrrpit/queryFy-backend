@@ -65,9 +65,9 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.use('/', (req, res) => {
-  res.send('Welcome to the API');
-});
+// app.use('/', (req, res) => {
+//   res.send('Welcome to the API');
+// });
 
 // 404 handler
 app.use('*', (req, res) => {
