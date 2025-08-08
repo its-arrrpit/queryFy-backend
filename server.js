@@ -4,6 +4,11 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
+const corsOptions = {
+  origin: 'https://query-fy.vercel.app/', // ⬅️ Replace this with your actual frontend URL!
+  optionsSuccessStatus: 200,
+};
+
 // Load environment variables
 dotenv.config();
 
@@ -14,7 +19,7 @@ const queryRoutes = require('./routes/query');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
