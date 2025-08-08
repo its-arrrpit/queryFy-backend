@@ -2,6 +2,18 @@
  * DELETE /api/upload
  * Delete all documents and their associated files
  */
+
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const Document = require('../models/Document');
+const { extractTextFromDocument, cleanText } = require('../utils/textExtractor');
+const { getMemoryStorage } = require('../utils/memoryStorage');
+const { generateRecommendedQuestions } = require('../services/geminiService');
+
+const router = express.Router();
+
 router.delete('/', async (req, res) => {
   try {
     const documents = await Document.find({});
@@ -19,14 +31,6 @@ router.delete('/', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete all documents', message: error.message });
   }
 });
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const Document = require('../models/Document');
-const { extractTextFromDocument, cleanText } = require('../utils/textExtractor');
-const { getMemoryStorage } = require('../utils/memoryStorage');
-const { generateRecommendedQuestions } = require('../services/geminiService');
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, '../uploads');
@@ -34,7 +38,6 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-const router = express.Router();
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
