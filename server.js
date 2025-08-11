@@ -50,6 +50,7 @@ const app = express();
 
 // Middleware
 app.use(cors(corsOptions));
+console.log('CORS allowed origins:', allowedOrigins.join(', ') || '(none)');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
