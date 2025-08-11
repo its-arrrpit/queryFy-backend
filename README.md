@@ -35,7 +35,7 @@ A powerful backend application that processes document uploads and answers queri
 
 3. Create a `.env` file with the following variables:
    ```
-   PORT=5000
+  PORT=5001
    MONGODB_URI=mongodb://localhost:27017/querify
    OPENAI_API_KEY=your_openai_api_key_here
    NODE_ENV=development
@@ -72,13 +72,13 @@ A powerful backend application that processes document uploads and answers queri
 
 ### Upload a Document
 ```bash
-curl -X POST http://localhost:5000/api/upload \
+curl -X POST http://localhost:5001/api/upload \
   -F "document=@/path/to/your/document.pdf"
 ```
 
 ### Query a Document
 ```bash
-curl -X POST http://localhost:5000/api/query \
+curl -X POST http://localhost:5001/api/query \
   -H "Content-Type: application/json" \
   -d '{
     "documentId": "document_id_here",
@@ -130,7 +130,7 @@ backend/
 
 ## Environment Variables
 
-- `PORT`: Server port (default: 5000)
+- `PORT`: Server port (default: 5001)
 - `MONGODB_URI`: MongoDB connection string
 - `OPENAI_API_KEY`: Your OpenAI API key
 - `NODE_ENV`: Environment (development/production)
