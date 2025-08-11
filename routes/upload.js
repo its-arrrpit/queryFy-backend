@@ -7,6 +7,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const fsExtra = require('fs-extra');
 const Document = require('../models/Document');
 const { extractTextFromDocument, cleanText } = require('../utils/textExtractor');
 const { getMemoryStorage } = require('../utils/memoryStorage');
@@ -89,29 +90,28 @@ router.post('/', upload.single('document'), async (req, res) => {
       });
     }
 
-    console.log('File uploaded:', req.file.originalname);
+  console.log('File uploaded:', req.file.originalname);
 
     // Extract text from the uploaded document
     let extractedText = '';
     try {
       console.log('🔍 Starting text extraction for:', req.file.originalname, 'Type:', req.file.mimetype);
       extractedText = await extractTextFromDocument(req.file.path, req.file.mimetype);
-      console.log('📝 Raw extracted text length:', extractedText ? extractedText.length : 0);
-      console.log('📝 Raw text preview:', extractedText ? extractedText.substring(0, 200) + '...' : 'NO TEXT');
+  // Extraction debug (trimmed)
+  console.log('Text length:', extractedText ? extractedText.length : 0);
       
       extractedText = cleanText(extractedText);
-      console.log('✨ Cleaned text length:', extractedText ? extractedText.length : 0);
-      console.log('✨ Cleaned text preview:', extractedText ? extractedText.substring(0, 200) + '...' : 'NO TEXT');
+  console.log('Cleaned text length:', extractedText ? extractedText.length : 0);
       
       if (!extractedText || extractedText.trim().length === 0) {
-        console.error('❌ Text extraction resulted in empty content');
+  console.error('Text extraction resulted in empty content');
         throw new Error('Document appears to be empty or contains no readable text');
       }
     } catch (extractionError) {
       console.error('❌ Text extraction failed:', extractionError);
       // Clean up the uploaded file if text extraction fails
       try {
-        await fs.unlink(req.file.path);
+        await fsExtra.remove(req.file.path);
       } catch (cleanupError) {
         console.error('File cleanup error:', cleanupError);
       }
@@ -152,7 +152,7 @@ router.post('/', upload.single('document'), async (req, res) => {
     // Clean up uploaded file if there's an error
     if (req.file && req.file.path) {
       try {
-        await fs.unlink(req.file.path);
+        await fsExtra.remove(req.file.path);
       } catch (cleanupError) {
         console.error('File cleanup error:', cleanupError);
       }
@@ -206,7 +206,7 @@ router.delete('/:id', async (req, res) => {
 
     // Remove the physical file
     try {
-      await fs.remove(document.filePath);
+      await fsExtra.remove(document.filePath);
     } catch (fileError) {
       console.error('Error removing file:', fileError);
     }

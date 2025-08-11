@@ -44,8 +44,7 @@ router.post('/', async (req, res) => {
       });
     }
 
-    console.log(`Processing query for document: ${document.originalName}`);
-    console.log(`Query: ${query}`);
+  console.log(`Processing query for document: ${document.originalName}`);
 
     // Process query with Gemini
     const startTime = Date.now();

@@ -4,8 +4,38 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
+// Configure allowed origins via env (comma-separated), with sensible local defaults
+const defaultOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:5173'
+];
+const envOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
+
 const corsOptions = {
-  origin: 'https://query-fy.vercel.app/', // ⬅️ Replace this with your actual frontend URL!
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl)
+    if (!origin) return callback(null, true);
+    // Allow all if '*' present
+    if (allowedOrigins.includes('*')) return callback(null, true);
+    // Exact match
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Support simple wildcard entries like *.vercel.app
+    const ok = allowedOrigins.some(o => {
+      if (o.startsWith('*.')) {
+        const base = o.slice(1); // remove leading '*'
+        return origin.endsWith(base);
+      }
+      return false;
+    });
+    if (ok) return callback(null, true);
+    return callback(new Error('CORS blocked: ' + origin), false);
+  },
+  credentials: true,
   optionsSuccessStatus: 200,
 };
 
@@ -65,9 +95,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-// app.use('/', (req, res) => {
-//   res.send('Welcome to the API');
-// });
+// Root welcome (optional)
 
 // 404 handler
 app.use('*', (req, res) => {
